@@ -27,172 +27,98 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class Thermo>
-inline Foam::bloodTransport<Thermo>::bloodTransport
-(
-    const Thermo& t,
-    const scalar mu,
-    const scalar Pr
-)
-:
-    Thermo(t),
-    mu_(mu),
-    rPr_(1.0/Pr)
-{}
+template <class Thermo>
+inline Foam::bloodTransport<Thermo>::bloodTransport(const Thermo &t,
+                                                    const scalar mu,
+                                                    const scalar Pr)
+    : Thermo(t), mu_(mu), rPr_(1.0 / Pr) {}
 
+template <class Thermo>
+inline Foam::bloodTransport<Thermo>::bloodTransport(const word &name,
+                                                    const bloodTransport &ct)
+    : Thermo(name, ct), mu_(ct.mu_), rPr_(ct.rPr_) {}
 
-template<class Thermo>
-inline Foam::bloodTransport<Thermo>::bloodTransport
-(
-    const word& name,
-    const bloodTransport& ct
-)
-:
-    Thermo(name, ct),
-    mu_(ct.mu_),
-    rPr_(ct.rPr_)
-{}
-
-
-template<class Thermo>
+template <class Thermo>
 inline Foam::autoPtr<Foam::bloodTransport<Thermo>>
-Foam::bloodTransport<Thermo>::clone() const
-{
-    return autoPtr<bloodTransport<Thermo>>::New(*this);
+Foam::bloodTransport<Thermo>::clone() const {
+  return autoPtr<bloodTransport<Thermo>>::New(*this);
 }
 
-
-template<class Thermo>
+template <class Thermo>
 inline Foam::autoPtr<Foam::bloodTransport<Thermo>>
-Foam::bloodTransport<Thermo>::New
-(
-    const dictionary& dict
-)
-{
-    return autoPtr<bloodTransport<Thermo>>::New(dict);
+Foam::bloodTransport<Thermo>::New(const dictionary &dict) {
+  return autoPtr<bloodTransport<Thermo>>::New(dict);
 }
-
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class Thermo>
-inline Foam::scalar Foam::bloodTransport<Thermo>::mu
-(
-    const scalar p,
-    const scalar T
-) const
-{
-    return mu_;
+template <class Thermo>
+inline Foam::scalar
+Foam::bloodTransport<Thermo>::mu(const scalar p, const scalar T,
+                                 const scalar sr, const scalar alpha1) const {
+
+  return mu_;
 }
 
-
-template<class Thermo>
-inline Foam::scalar Foam::bloodTransport<Thermo>::kappa
-(
-    const scalar p,
-    const scalar T
-) const
-{
-    return this->Cp(p, T)*mu(p, T)*rPr_;
+template <class Thermo>
+inline Foam::scalar Foam::bloodTransport<Thermo>::kappa(const scalar p,
+                                                        const scalar T) const {
+  return this->Cp(p, T) * mu(p, T) * rPr_;
 }
 
-
-template<class Thermo>
-inline Foam::scalar Foam::bloodTransport<Thermo>::alphah
-(
-    const scalar p,
-    const scalar T
-) const
-{
-    return mu(p, T)*rPr_;
+template <class Thermo>
+inline Foam::scalar Foam::bloodTransport<Thermo>::alphah(const scalar p,
+                                                         const scalar T) const {
+  return mu(p, T) * rPr_;
 }
-
 
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
 
-template<class Thermo>
-inline void Foam::bloodTransport<Thermo>::operator+=
-(
-    const bloodTransport<Thermo>& st
-)
-{
-    scalar Y1 = this->Y();
+template <class Thermo>
+inline void
+Foam::bloodTransport<Thermo>::operator+=(const bloodTransport<Thermo> &st) {
+  scalar Y1 = this->Y();
 
-    Thermo::operator+=(st);
+  Thermo::operator+=(st);
 
-    if (mag(this->Y()) > SMALL)
-    {
-        Y1 /= this->Y();
-        scalar Y2 = st.Y()/this->Y();
+  if (mag(this->Y()) > SMALL) {
+    Y1 /= this->Y();
+    scalar Y2 = st.Y() / this->Y();
 
-        mu_ = Y1*mu_ + Y2*st.mu_;
-        rPr_ = 1.0/(Y1/rPr_ + Y2/st.rPr_);
-    }
+    mu_ = Y1 * mu_ + Y2 * st.mu_;
+    rPr_ = 1.0 / (Y1 / rPr_ + Y2 / st.rPr_);
+  }
 }
 
-
-template<class Thermo>
-inline void Foam::bloodTransport<Thermo>::operator*=
-(
-    const scalar s
-)
-{
-    Thermo::operator*=(s);
+template <class Thermo>
+inline void Foam::bloodTransport<Thermo>::operator*=(const scalar s) {
+  Thermo::operator*=(s);
 }
-
 
 // * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
 
-template<class Thermo>
-inline Foam::bloodTransport<Thermo> Foam::operator+
-(
-    const bloodTransport<Thermo>& ct1,
-    const bloodTransport<Thermo>& ct2
-)
-{
-    Thermo t
-    (
-        static_cast<const Thermo&>(ct1) + static_cast<const Thermo&>(ct2)
-    );
+template <class Thermo>
+inline Foam::bloodTransport<Thermo>
+Foam::operator+(const bloodTransport<Thermo> &ct1,
+                const bloodTransport<Thermo> &ct2) {
+  Thermo t(static_cast<const Thermo &>(ct1) + static_cast<const Thermo &>(ct2));
 
-    if (mag(t.Y()) < SMALL)
-    {
-        return bloodTransport<Thermo>
-        (
-            t,
-            0,
-            ct1.rPr_
-        );
-    }
-    else
-    {
-        scalar Y1 = ct1.Y()/t.Y();
-        scalar Y2 = ct2.Y()/t.Y();
+  if (mag(t.Y()) < SMALL) {
+    return bloodTransport<Thermo>(t, 0, ct1.rPr_);
+  } else {
+    scalar Y1 = ct1.Y() / t.Y();
+    scalar Y2 = ct2.Y() / t.Y();
 
-        return bloodTransport<Thermo>
-        (
-            t,
-            Y1*ct1.mu_ + Y2*ct2.mu_,
-            1.0/(Y1/ct1.rPr_ + Y2/ct2.rPr_)
-        );
-    }
+    return bloodTransport<Thermo>(t, Y1 * ct1.mu_ + Y2 * ct2.mu_,
+                                  1.0 / (Y1 / ct1.rPr_ + Y2 / ct2.rPr_));
+  }
 }
 
-
-template<class Thermo>
-inline Foam::bloodTransport<Thermo> Foam::operator*
-(
-    const scalar s,
-    const bloodTransport<Thermo>& ct
-)
-{
-    return bloodTransport<Thermo>
-    (
-        s*static_cast<const Thermo&>(ct),
-        ct.mu_,
-        1.0/ct.rPr_
-    );
+template <class Thermo>
+inline Foam::bloodTransport<Thermo>
+Foam::operator*(const scalar s, const bloodTransport<Thermo> &ct) {
+  return bloodTransport<Thermo>(s * static_cast<const Thermo &>(ct), ct.mu_,
+                                1.0 / ct.rPr_);
 }
-
 
 // ************************************************************************* //
