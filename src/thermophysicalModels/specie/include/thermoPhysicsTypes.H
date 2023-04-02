@@ -79,6 +79,20 @@ namespace Foam
         >
     > bloodGasHThermoPhysics;
 
+
+    typedef
+    bloodTransport
+    <
+        species::thermo
+        <
+            hConstThermo
+            <
+                perfectFluid<specie>
+            >,
+            sensibleEnthalpy
+        >
+    >
+    bloodFluidHThermoPhysics;
    
     typedef
     constTransport
@@ -246,6 +260,19 @@ namespace Foam
         >
     > bloodGasEThermoPhysics;
 
+    typedef
+    bloodTransport
+    <
+        species::thermo
+        <
+            eConstThermo
+            <
+                perfectFluid<specie>
+            >,
+            sensibleInternalEnergy
+        >
+    >
+    bloodFluidEThermoPhysics;
 
     typedef
     constTransport
