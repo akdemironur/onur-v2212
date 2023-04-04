@@ -607,12 +607,12 @@ $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/mixedFvPatchField.C \
 rhoThermo/heRhoThermo.C \
 lnInclude/pureMixture.H \
 lnInclude/pureMixture.C \
-/home/onur/OpenFOAM/onur-v2212/src/thermophysicalModels/specie/lnInclude/thermo.H \
+$(WM_PROJECT_DIR)/src/thermophysicalModels/specie/lnInclude/thermo.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/thermodynamicConstants.H \
-/home/onur/OpenFOAM/onur-v2212/src/thermophysicalModels/specie/lnInclude/thermoI.H \
-/home/onur/OpenFOAM/onur-v2212/src/thermophysicalModels/specie/lnInclude/thermo.C \
-/home/onur/OpenFOAM/onur-v2212/src/thermophysicalModels/specie/lnInclude/sensibleInternalEnergy.H \
-/home/onur/OpenFOAM/onur-v2212/src/thermophysicalModels/specie/lnInclude/sensibleEnthalpy.H \
+$(WM_PROJECT_DIR)/src/thermophysicalModels/specie/lnInclude/thermoI.H \
+$(WM_PROJECT_DIR)/src/thermophysicalModels/specie/lnInclude/thermo.C \
+$(WM_PROJECT_DIR)/src/thermophysicalModels/specie/lnInclude/sensibleInternalEnergy.H \
+$(WM_PROJECT_DIR)/src/thermophysicalModels/specie/lnInclude/sensibleEnthalpy.H \
 $(WM_PROJECT_DIR)/src/thermophysicalModels/thermophysicalProperties/lnInclude/thermophysicalPropertiesSelector.H \
 $(WM_PROJECT_DIR)/src/thermophysicalModels/thermophysicalProperties/lnInclude/thermophysicalProperties.H \
 $(WM_PROJECT_DIR)/src/thermophysicalModels/thermophysicalProperties/lnInclude/thermophysicalPropertiesI.H \

@@ -55,21 +55,25 @@ Foam::bloodTransport<Thermo>::New(const dictionary &dict) {
 template <class Thermo>
 inline Foam::scalar
 Foam::bloodTransport<Thermo>::mu(const scalar p, const scalar T,
-                                 const scalar sr, const scalar alpha1) const {
+                                 const scalar sr, const scalar alphaHCT) const {
 
   return mu_;
 }
 
 template <class Thermo>
-inline Foam::scalar Foam::bloodTransport<Thermo>::kappa(const scalar p,
-                                                        const scalar T) const {
-  return this->Cp(p, T) * mu(p, T) * rPr_;
+inline Foam::scalar
+Foam::bloodTransport<Thermo>::kappa(const scalar p, const scalar T,
+                                    const scalar sr,
+                                    const scalar alphaHCT) const {
+  return this->Cp(p, T) * mu(p, T, sr, alphaHCT) * rPr_;
 }
 
 template <class Thermo>
-inline Foam::scalar Foam::bloodTransport<Thermo>::alphah(const scalar p,
-                                                         const scalar T) const {
-  return mu(p, T) * rPr_;
+inline Foam::scalar
+Foam::bloodTransport<Thermo>::alphah(const scalar p, const scalar T,
+                                     const scalar sr,
+                                     const scalar alphaHCT) const {
+  return mu(p, T, sr, alphaHCT) * rPr_;
 }
 
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
