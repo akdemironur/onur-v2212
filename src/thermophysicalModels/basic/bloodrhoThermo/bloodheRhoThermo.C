@@ -51,13 +51,13 @@ void Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::calculate(
   scalarField &muCells = mu.primitiveFieldRef();
   scalarField &alphaCells = alpha.primitiveFieldRef();
   const volScalarField &alphaHCT_ =
-      this->db().objectRegistry ::lookupObject<volScalarField>("alpha.HCT");
+      this->db().objectRegistry ::lookupObject<volScalarField>("alpha.water");
 
   const volVectorField &U =
-      this->db().objectRegistry::lookupObject<volVectorField>("U");
-  volScalarField sr_ = sqrt(2) * mag(symm(fvc::grad(U)));
+      this->db().objectRegistry::lookupObject<volVectorField>("U.water");
+  volScalarField sr_ = sqrt(2.0) * mag(symm(fvc::grad(U)));
   scalarField &srCells = sr_.primitiveFieldRef();
-  scalarField &alphaHCTCells = alphaHCT_.primitiveFieldRef();
+  scalarField &alphaHCTCells = alphaHCT_.primitiveField();
   forAll(TCells, celli) {
     const typename MixtureType::thermoType &mixture_ = this->cellMixture(celli);
 

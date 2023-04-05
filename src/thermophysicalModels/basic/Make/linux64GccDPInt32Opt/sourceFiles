@@ -8,6 +8,8 @@ rhoThermo/rhoThermo.C \
 rhoThermo/rhoThermos.C \
 rhoThermo/liquidThermo.C \
 rhoThermo/rhoZoneThermos.C \
+bloodrhoThermo/bloodrhoThermo.C \
+bloodrhoThermo/bloodrhoThermos.C \
 derivedFvPatchFields/fixedEnergy/fixedEnergyFvPatchScalarField.C \
 derivedFvPatchFields/gradientEnergy/gradientEnergyFvPatchScalarField.C \
 derivedFvPatchFields/mixedEnergy/mixedEnergyFvPatchScalarField.C \
