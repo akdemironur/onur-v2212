@@ -27,7 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "bloodheRhoThermo.H"
-
+#include "fvCFD.H"
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
 template <class BasicPsiThermo, class MixtureType>
@@ -56,8 +56,8 @@ void Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::calculate(
   const volVectorField &U =
       this->db().objectRegistry::lookupObject<volVectorField>("U.water");
   volScalarField sr_ = sqrt(2.0) * mag(symm(fvc::grad(U)));
-  scalarField &srCells = sr_.primitiveFieldRef();
-  scalarField &alphaHCTCells = alphaHCT_.primitiveField();
+  const scalarField &srCells = sr_.primitiveFieldRef();
+  const scalarField &alphaHCTCells = alphaHCT_.primitiveField();
   forAll(TCells, celli) {
     const typename MixtureType::thermoType &mixture_ = this->cellMixture(celli);
 
@@ -77,7 +77,7 @@ void Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::calculate(
   const volScalarField::Boundary &pBf = p.boundaryField();
   volScalarField::Boundary &TBf = T.boundaryFieldRef();
   volScalarField::Boundary &srBf = sr_.boundaryFieldRef();
-  volScalarField::Boundary &alphaHCTBf = alphaHCT_.boundaryFieldRef();
+  const volScalarField::Boundary &alphaHCTBf = alphaHCT_.boundaryField();
   volScalarField::Boundary &psiBf = psi.boundaryFieldRef();
   volScalarField::Boundary &rhoBf = rho.boundaryFieldRef();
   volScalarField::Boundary &heBf = he.boundaryFieldRef();
@@ -88,7 +88,7 @@ void Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::calculate(
     const fvPatchScalarField &pp = pBf[patchi];
     fvPatchScalarField &pT = TBf[patchi];
     fvPatchScalarField &psr = srBf[patchi];
-    fvPatchScalarField &palphaHCT = alphaHCTBf[patchi];
+    const fvPatchScalarField &palphaHCT = alphaHCTBf[patchi];
     fvPatchScalarField &ppsi = psiBf[patchi];
     fvPatchScalarField &prho = rhoBf[patchi];
     fvPatchScalarField &phe = heBf[patchi];
