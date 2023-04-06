@@ -52,11 +52,18 @@ void Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::calculate(const volSca
     scalarField &rhoCells = rho.primitiveFieldRef();
     scalarField &muCells = mu.primitiveFieldRef();
     scalarField &alphaCells = alpha.primitiveFieldRef();
-    const volScalarField &alphaHCT_ = this->db().objectRegistry ::lookupObject<volScalarField>("alpha.*");
+    /* const volScalarField &alphaHCT_ = this->db().objectRegistry ::lookupObject<volScalarField>("alpha.air"); */
+    const volScalarField *alphaHCT1 = this->db().objectRegistry ::findObject<volScalarField>("alpha.water");
+    const volScalarField *alphaHCT2 = this->db().objectRegistry ::findObject<volScalarField>("alpha.air");
+    const volScalarField &alphaHCT_ = alphaHCT1 ? *alphaHCT1 : *alphaHCT2;
 
-    const volVectorField &U = this->db().objectRegistry::lookupObject<volVectorField>("U.*");
+    const volVectorField &U = this->db().objectRegistry::lookupObject<volVectorField>("U");
+    /* const volVectorField *U1 = this->db().objectRegistry::findObject<volVectorField>("U.water"); */
+    /* const volVectorField *U2 = this->db().objectRegistry::findObject<volVectorField>("U.air"); */
+    /* const volVectorField &U = U1 ? *U1 : *U2; */
     volScalarField sr_ = sqrt(2.0) * mag(symm(fvc::grad(U)));
-    const scalarField &srCells = sr_.primitiveFieldRef();
+    /* volScalarField sr_ = this->db().objectRegistry::lookupObject<volScalarField>("K.air"); */
+    scalarField &srCells = sr_.primitiveFieldRef();
     const scalarField &alphaHCTCells = alphaHCT_.primitiveField();
     forAll(TCells, celli)
     {
