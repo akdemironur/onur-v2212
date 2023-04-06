@@ -31,143 +31,144 @@ License
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
 template <class BasicPsiThermo, class MixtureType>
-void Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::calculate(
-    const volScalarField &p, volScalarField &T, volScalarField &he,
-    volScalarField &psi, volScalarField &rho, volScalarField &mu,
-    volScalarField &alpha, const bool doOldTimes) {
-  // Note: update oldTimes before current time so that if T.oldTime() is
-  // created from T, it starts from the unconverted T
-  if (doOldTimes && (p.nOldTimes() || T.nOldTimes())) {
-    calculate(p.oldTime(), T.oldTime(), he.oldTime(), psi.oldTime(),
-              rho.oldTime(), mu.oldTime(), alpha.oldTime(), true);
-  }
-
-  const scalarField &hCells = he.primitiveField();
-  const scalarField &pCells = p.primitiveField();
-
-  scalarField &TCells = T.primitiveFieldRef();
-  scalarField &psiCells = psi.primitiveFieldRef();
-  scalarField &rhoCells = rho.primitiveFieldRef();
-  scalarField &muCells = mu.primitiveFieldRef();
-  scalarField &alphaCells = alpha.primitiveFieldRef();
-  const volScalarField &alphaHCT_ =
-      this->db().objectRegistry ::lookupObject<volScalarField>("alpha.water");
-
-  const volVectorField &U =
-      this->db().objectRegistry::lookupObject<volVectorField>("U.water");
-  volScalarField sr_ = sqrt(2.0) * mag(symm(fvc::grad(U)));
-  const scalarField &srCells = sr_.primitiveFieldRef();
-  const scalarField &alphaHCTCells = alphaHCT_.primitiveField();
-  forAll(TCells, celli) {
-    const typename MixtureType::thermoType &mixture_ = this->cellMixture(celli);
-
-    if (this->updateT()) {
-      TCells[celli] = mixture_.THE(hCells[celli], pCells[celli], TCells[celli]);
+void Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::calculate(const volScalarField &p, volScalarField &T,
+                                                                    volScalarField &he, volScalarField &psi,
+                                                                    volScalarField &rho, volScalarField &mu,
+                                                                    volScalarField &alpha, const bool doOldTimes)
+{
+    // Note: update oldTimes before current time so that if T.oldTime() is
+    // created from T, it starts from the unconverted T
+    if (doOldTimes && (p.nOldTimes() || T.nOldTimes()))
+    {
+        calculate(p.oldTime(), T.oldTime(), he.oldTime(), psi.oldTime(), rho.oldTime(), mu.oldTime(), alpha.oldTime(),
+                  true);
     }
 
-    psiCells[celli] = mixture_.psi(pCells[celli], TCells[celli]);
-    rhoCells[celli] = mixture_.rho(pCells[celli], TCells[celli]);
+    const scalarField &hCells = he.primitiveField();
+    const scalarField &pCells = p.primitiveField();
 
-    muCells[celli] = mixture_.mu(pCells[celli], TCells[celli], srCells[celli],
-                                 alphaHCTCells[celli]);
-    alphaCells[celli] = mixture_.alphah(pCells[celli], TCells[celli],
-                                        srCells[celli], alphaHCTCells[celli]);
-  }
+    scalarField &TCells = T.primitiveFieldRef();
+    scalarField &psiCells = psi.primitiveFieldRef();
+    scalarField &rhoCells = rho.primitiveFieldRef();
+    scalarField &muCells = mu.primitiveFieldRef();
+    scalarField &alphaCells = alpha.primitiveFieldRef();
+    const volScalarField &alphaHCT_ = this->db().objectRegistry ::lookupObject<volScalarField>("alpha.*");
 
-  const volScalarField::Boundary &pBf = p.boundaryField();
-  volScalarField::Boundary &TBf = T.boundaryFieldRef();
-  volScalarField::Boundary &srBf = sr_.boundaryFieldRef();
-  const volScalarField::Boundary &alphaHCTBf = alphaHCT_.boundaryField();
-  volScalarField::Boundary &psiBf = psi.boundaryFieldRef();
-  volScalarField::Boundary &rhoBf = rho.boundaryFieldRef();
-  volScalarField::Boundary &heBf = he.boundaryFieldRef();
-  volScalarField::Boundary &muBf = mu.boundaryFieldRef();
-  volScalarField::Boundary &alphaBf = alpha.boundaryFieldRef();
+    const volVectorField &U = this->db().objectRegistry::lookupObject<volVectorField>("U.*");
+    volScalarField sr_ = sqrt(2.0) * mag(symm(fvc::grad(U)));
+    const scalarField &srCells = sr_.primitiveFieldRef();
+    const scalarField &alphaHCTCells = alphaHCT_.primitiveField();
+    forAll(TCells, celli)
+    {
+        const typename MixtureType::thermoType &mixture_ = this->cellMixture(celli);
 
-  forAll(pBf, patchi) {
-    const fvPatchScalarField &pp = pBf[patchi];
-    fvPatchScalarField &pT = TBf[patchi];
-    fvPatchScalarField &psr = srBf[patchi];
-    const fvPatchScalarField &palphaHCT = alphaHCTBf[patchi];
-    fvPatchScalarField &ppsi = psiBf[patchi];
-    fvPatchScalarField &prho = rhoBf[patchi];
-    fvPatchScalarField &phe = heBf[patchi];
-    fvPatchScalarField &pmu = muBf[patchi];
-    fvPatchScalarField &palpha = alphaBf[patchi];
-
-    if (pT.fixesValue()) {
-      forAll(pT, facei) {
-        const typename MixtureType::thermoType &mixture_ =
-            this->patchFaceMixture(patchi, facei);
-
-        phe[facei] = mixture_.HE(pp[facei], pT[facei]);
-
-        ppsi[facei] = mixture_.psi(pp[facei], pT[facei]);
-        prho[facei] = mixture_.rho(pp[facei], pT[facei]);
-        pmu[facei] =
-            mixture_.mu(pp[facei], pT[facei], psr[facei], palphaHCT[facei]);
-        palpha[facei] =
-            mixture_.alphah(pp[facei], pT[facei], psr[facei], palphaHCT[facei]);
-      }
-    } else {
-      forAll(pT, facei) {
-        const typename MixtureType::thermoType &mixture_ =
-            this->patchFaceMixture(patchi, facei);
-
-        if (this->updateT()) {
-          pT[facei] = mixture_.THE(phe[facei], pp[facei], pT[facei]);
+        if (this->updateT())
+        {
+            TCells[celli] = mixture_.THE(hCells[celli], pCells[celli], TCells[celli]);
         }
 
-        ppsi[facei] = mixture_.psi(pp[facei], pT[facei]);
-        prho[facei] = mixture_.rho(pp[facei], pT[facei]);
-        pmu[facei] =
-            mixture_.mu(pp[facei], pT[facei], psr[facei], palphaHCT[facei]);
-        palpha[facei] =
-            mixture_.alphah(pp[facei], pT[facei], psr[facei], palphaHCT[facei]);
-      }
+        psiCells[celli] = mixture_.psi(pCells[celli], TCells[celli]);
+        rhoCells[celli] = mixture_.rho(pCells[celli], TCells[celli]);
+
+        muCells[celli] = mixture_.mu(pCells[celli], TCells[celli], srCells[celli], alphaHCTCells[celli]);
+        alphaCells[celli] = mixture_.alphah(pCells[celli], TCells[celli], srCells[celli], alphaHCTCells[celli]);
     }
-  }
+
+    const volScalarField::Boundary &pBf = p.boundaryField();
+    volScalarField::Boundary &TBf = T.boundaryFieldRef();
+    volScalarField::Boundary &srBf = sr_.boundaryFieldRef();
+    const volScalarField::Boundary &alphaHCTBf = alphaHCT_.boundaryField();
+    volScalarField::Boundary &psiBf = psi.boundaryFieldRef();
+    volScalarField::Boundary &rhoBf = rho.boundaryFieldRef();
+    volScalarField::Boundary &heBf = he.boundaryFieldRef();
+    volScalarField::Boundary &muBf = mu.boundaryFieldRef();
+    volScalarField::Boundary &alphaBf = alpha.boundaryFieldRef();
+
+    forAll(pBf, patchi)
+    {
+        const fvPatchScalarField &pp = pBf[patchi];
+        fvPatchScalarField &pT = TBf[patchi];
+        fvPatchScalarField &psr = srBf[patchi];
+        const fvPatchScalarField &palphaHCT = alphaHCTBf[patchi];
+        fvPatchScalarField &ppsi = psiBf[patchi];
+        fvPatchScalarField &prho = rhoBf[patchi];
+        fvPatchScalarField &phe = heBf[patchi];
+        fvPatchScalarField &pmu = muBf[patchi];
+        fvPatchScalarField &palpha = alphaBf[patchi];
+
+        if (pT.fixesValue())
+        {
+            forAll(pT, facei)
+            {
+                const typename MixtureType::thermoType &mixture_ = this->patchFaceMixture(patchi, facei);
+
+                phe[facei] = mixture_.HE(pp[facei], pT[facei]);
+
+                ppsi[facei] = mixture_.psi(pp[facei], pT[facei]);
+                prho[facei] = mixture_.rho(pp[facei], pT[facei]);
+                pmu[facei] = mixture_.mu(pp[facei], pT[facei], psr[facei], palphaHCT[facei]);
+                palpha[facei] = mixture_.alphah(pp[facei], pT[facei], psr[facei], palphaHCT[facei]);
+            }
+        }
+        else
+        {
+            forAll(pT, facei)
+            {
+                const typename MixtureType::thermoType &mixture_ = this->patchFaceMixture(patchi, facei);
+
+                if (this->updateT())
+                {
+                    pT[facei] = mixture_.THE(phe[facei], pp[facei], pT[facei]);
+                }
+
+                ppsi[facei] = mixture_.psi(pp[facei], pT[facei]);
+                prho[facei] = mixture_.rho(pp[facei], pT[facei]);
+                pmu[facei] = mixture_.mu(pp[facei], pT[facei], psr[facei], palphaHCT[facei]);
+                palpha[facei] = mixture_.alphah(pp[facei], pT[facei], psr[facei], palphaHCT[facei]);
+            }
+        }
+    }
 }
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template <class BasicPsiThermo, class MixtureType>
-Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::bloodheRhoThermo(
-    const fvMesh &mesh, const word &phaseName)
-    : heThermo<BasicPsiThermo, MixtureType>(mesh, phaseName) {
-  calculate(this->p_, this->T_, this->he_, this->psi_, this->rho_, this->mu_,
-            this->alpha_,
-            true // Create old time fields
-  );
+Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::bloodheRhoThermo(const fvMesh &mesh, const word &phaseName)
+    : heThermo<BasicPsiThermo, MixtureType>(mesh, phaseName)
+{
+    calculate(this->p_, this->T_, this->he_, this->psi_, this->rho_, this->mu_, this->alpha_,
+              true // Create old time fields
+    );
 }
 
 template <class BasicPsiThermo, class MixtureType>
-Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::bloodheRhoThermo(
-    const fvMesh &mesh, const word &phaseName, const word &dictName)
-    : heThermo<BasicPsiThermo, MixtureType>(mesh, phaseName, dictName) {
-  calculate(this->p_, this->T_, this->he_, this->psi_, this->rho_, this->mu_,
-            this->alpha_,
-            true // Create old time fields
-  );
+Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::bloodheRhoThermo(const fvMesh &mesh, const word &phaseName,
+                                                                      const word &dictName)
+    : heThermo<BasicPsiThermo, MixtureType>(mesh, phaseName, dictName)
+{
+    calculate(this->p_, this->T_, this->he_, this->psi_, this->rho_, this->mu_, this->alpha_,
+              true // Create old time fields
+    );
 }
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 template <class BasicPsiThermo, class MixtureType>
-Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::~bloodheRhoThermo() {}
+Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::~bloodheRhoThermo()
+{
+}
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template <class BasicPsiThermo, class MixtureType>
-void Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::correct() {
-  DebugInFunction << endl;
+template <class BasicPsiThermo, class MixtureType> void Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::correct()
+{
+    DebugInFunction << endl;
 
-  calculate(this->p_, this->T_, this->he_, this->psi_, this->rho_, this->mu_,
-            this->alpha_,
-            false // No need to update old times
-  );
+    calculate(this->p_, this->T_, this->he_, this->psi_, this->rho_, this->mu_, this->alpha_,
+              false // No need to update old times
+    );
 
-  DebugInFunction << "Finished" << endl;
+    DebugInFunction << "Finished" << endl;
 }
 
 // ************************************************************************* //
