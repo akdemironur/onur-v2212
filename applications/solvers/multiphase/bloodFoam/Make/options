@@ -2,7 +2,7 @@ phaseSystem = $(LIB_SRC)/phaseSystemModels/twoPhaseEuler
 
 EXE_INC = \
     -I${phaseSystem}/phaseCompressibleTurbulenceModels/lnInclude \
-    -I${phaseSystem}/twoPhaseSystem/lnInclude \
+    -I$(WM_PROJECT_USER_DIR)/src/phaseSystemModels/twoPhaseEuler/twoPhaseSystem/lnInclude \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
     -I$(LIB_SRC)/meshTools/lnInclude \
     -I$(LIB_SRC)/sampling/lnInclude \

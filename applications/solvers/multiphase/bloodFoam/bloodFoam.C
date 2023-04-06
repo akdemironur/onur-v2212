@@ -42,59 +42,46 @@ Description
 #include "pimpleControl.H"
 #include "fvOptions.H"
 #include "fixedValueFvsPatchFields.H"
-
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 int main(int argc, char *argv[])
 {
-    argList::addNote
-    (
-        "Solver for a system of two compressible fluid phases with one"
-        " dispersed phase.\n"
-        "Eg, gas bubbles in a liquid including heat-transfer."
-    );
+    argList::addNote("Solver for a system of two compressible fluid phases with one"
+                     " dispersed phase.\n"
+                     "Eg, gas bubbles in a liquid including heat-transfer.");
 
-    #include "postProcess.H"
+#include "postProcess.H"
 
-    #include "addCheckCaseOptions.H"
-    #include "setRootCaseLists.H"
-    #include "createTime.H"
-    #include "createMesh.H"
-    #include "createControl.H"
-    #include "createFields.H"
-    #include "createFieldRefs.H"
-    #include "createTimeControls.H"
-    #include "CourantNos.H"
-    #include "setInitialDeltaT.H"
+#include "addCheckCaseOptions.H"
+#include "setRootCaseLists.H"
+#include "createTime.H"
+#include "createMesh.H"
+#include "createControl.H"
+#include "createFields.H"
+#include "createFieldRefs.H"
+#include "createTimeControls.H"
+#include "CourantNos.H"
+#include "setInitialDeltaT.H"
 
-    bool faceMomentum
-    (
-        pimple.dict().getOrDefault("faceMomentum", false)
-    );
+    bool faceMomentum(pimple.dict().getOrDefault("faceMomentum", false));
 
-    bool implicitPhasePressure
-    (
-        mesh.solverDict(alpha1.name()).getOrDefault
-        (
-            "implicitPhasePressure", false
-        )
-    );
+    bool implicitPhasePressure(mesh.solverDict(alpha1.name()).getOrDefault("implicitPhasePressure", false));
 
-    #include "pUf/createDDtU.H"
-    #include "pU/createDDtU.H"
+#include "pUf/createDDtU.H"
+#include "pU/createDDtU.H"
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-    Info<< "\nStarting time loop\n" << endl;
+    Info << "\nStarting time loop\n" << endl;
 
     while (runTime.run())
     {
-        #include "readTimeControls.H"
-        #include "CourantNos.H"
-        #include "setDeltaT.H"
+#include "readTimeControls.H"
+#include "CourantNos.H"
+#include "setDeltaT.H"
 
         ++runTime;
-        Info<< "Time = " << runTime.timeName() << nl << endl;
+        Info << "Time = " << runTime.timeName() << nl << endl;
 
         // --- Pressure-velocity PIMPLE corrector loop
         while (pimple.loop())
@@ -102,21 +89,21 @@ int main(int argc, char *argv[])
             fluid.solve();
             fluid.correct();
 
-            #include "contErrs.H"
+#include "contErrs.H"
 
             if (faceMomentum)
             {
-                #include "pUf/UEqns.H"
-                #include "EEqns.H"
-                #include "pUf/pEqn.H"
-                #include "pUf/DDtU.H"
+#include "pUf/UEqns.H"
+#include "EEqns.H"
+#include "pUf/pEqn.H"
+#include "pUf/DDtU.H"
             }
             else
             {
-                #include "pU/UEqns.H"
-                #include "EEqns.H"
-                #include "pU/pEqn.H"
-                #include "pU/DDtU.H"
+#include "pU/UEqns.H"
+#include "EEqns.H"
+#include "pU/pEqn.H"
+#include "pU/DDtU.H"
             }
 
             if (pimple.turbCorr())
@@ -125,15 +112,14 @@ int main(int argc, char *argv[])
             }
         }
 
-        #include "write.H"
+#include "write.H"
 
         runTime.printExecutionTime(Info);
     }
 
-    Info<< "End\n" << endl;
+    Info << "End\n" << endl;
 
     return 0;
 }
-
 
 // ************************************************************************* //
