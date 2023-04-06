@@ -52,7 +52,7 @@ void Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::calculate(const volSca
     scalarField &rhoCells = rho.primitiveFieldRef();
     scalarField &muCells = mu.primitiveFieldRef();
     scalarField &alphaCells = alpha.primitiveFieldRef();
-    const volScalarField &alphaHCT_ = this->db().objectRegistry ::lookupObject<volScalarField>("alpha.air");
+    const volScalarField &alphaplasma_ = this->db().objectRegistry ::lookupObject<volScalarField>("alpha.plasma");
 
     const volVectorField &U = this->db().objectRegistry::lookupObject<volVectorField>("U");
     /* const volVectorField *U1 = this->db().objectRegistry::findObject<volVectorField>("U.water"); */
@@ -61,7 +61,7 @@ void Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::calculate(const volSca
     volScalarField sr_ = sqrt(2.0) * mag(symm(fvc::grad(U)));
     /* volScalarField sr_ = this->db().objectRegistry::lookupObject<volScalarField>("K.air"); */
     scalarField &srCells = sr_.primitiveFieldRef();
-    const scalarField &alphaHCTCells = alphaHCT_.primitiveField();
+    const scalarField &alphaplasmaCells = alphaplasma_.primitiveField();
     forAll(TCells, celli)
     {
         const typename MixtureType::thermoType &mixture_ = this->cellMixture(celli);
@@ -74,14 +74,14 @@ void Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::calculate(const volSca
         psiCells[celli] = mixture_.psi(pCells[celli], TCells[celli]);
         rhoCells[celli] = mixture_.rho(pCells[celli], TCells[celli]);
 
-        muCells[celli] = mixture_.mu(pCells[celli], TCells[celli], srCells[celli], alphaHCTCells[celli]);
-        alphaCells[celli] = mixture_.alphah(pCells[celli], TCells[celli], srCells[celli], alphaHCTCells[celli]);
+        muCells[celli] = mixture_.mu(pCells[celli], TCells[celli], srCells[celli], alphaplasmaCells[celli]);
+        alphaCells[celli] = mixture_.alphah(pCells[celli], TCells[celli], srCells[celli], alphaplasmaCells[celli]);
     }
 
     const volScalarField::Boundary &pBf = p.boundaryField();
     volScalarField::Boundary &TBf = T.boundaryFieldRef();
     volScalarField::Boundary &srBf = sr_.boundaryFieldRef();
-    const volScalarField::Boundary &alphaHCTBf = alphaHCT_.boundaryField();
+    const volScalarField::Boundary &alphaplasmaBf = alphaplasma_.boundaryField();
     volScalarField::Boundary &psiBf = psi.boundaryFieldRef();
     volScalarField::Boundary &rhoBf = rho.boundaryFieldRef();
     volScalarField::Boundary &heBf = he.boundaryFieldRef();
@@ -93,7 +93,7 @@ void Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::calculate(const volSca
         const fvPatchScalarField &pp = pBf[patchi];
         fvPatchScalarField &pT = TBf[patchi];
         fvPatchScalarField &psr = srBf[patchi];
-        const fvPatchScalarField &palphaHCT = alphaHCTBf[patchi];
+        const fvPatchScalarField &palphaplasma = alphaplasmaBf[patchi];
         fvPatchScalarField &ppsi = psiBf[patchi];
         fvPatchScalarField &prho = rhoBf[patchi];
         fvPatchScalarField &phe = heBf[patchi];
@@ -110,8 +110,8 @@ void Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::calculate(const volSca
 
                 ppsi[facei] = mixture_.psi(pp[facei], pT[facei]);
                 prho[facei] = mixture_.rho(pp[facei], pT[facei]);
-                pmu[facei] = mixture_.mu(pp[facei], pT[facei], psr[facei], palphaHCT[facei]);
-                palpha[facei] = mixture_.alphah(pp[facei], pT[facei], psr[facei], palphaHCT[facei]);
+                pmu[facei] = mixture_.mu(pp[facei], pT[facei], psr[facei], palphaplasma[facei]);
+                palpha[facei] = mixture_.alphah(pp[facei], pT[facei], psr[facei], palphaplasma[facei]);
             }
         }
         else
@@ -127,8 +127,8 @@ void Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::calculate(const volSca
 
                 ppsi[facei] = mixture_.psi(pp[facei], pT[facei]);
                 prho[facei] = mixture_.rho(pp[facei], pT[facei]);
-                pmu[facei] = mixture_.mu(pp[facei], pT[facei], psr[facei], palphaHCT[facei]);
-                palpha[facei] = mixture_.alphah(pp[facei], pT[facei], psr[facei], palphaHCT[facei]);
+                pmu[facei] = mixture_.mu(pp[facei], pT[facei], psr[facei], palphaplasma[facei]);
+                palpha[facei] = mixture_.alphah(pp[facei], pT[facei], psr[facei], palphaplasma[facei]);
             }
         }
     }

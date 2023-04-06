@@ -46,97 +46,94 @@ SourceFiles
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-namespace Foam {
+namespace Foam
+{
 
 // Forward Declarations
 
 template <class Thermo> class bloodTransport;
 
 template <class Thermo>
-inline bloodTransport<Thermo> operator+(const bloodTransport<Thermo> &,
-                                        const bloodTransport<Thermo> &);
+inline bloodTransport<Thermo> operator+(const bloodTransport<Thermo> &, const bloodTransport<Thermo> &);
 
-template <class Thermo>
-inline bloodTransport<Thermo> operator*(const scalar,
-                                        const bloodTransport<Thermo> &);
+template <class Thermo> inline bloodTransport<Thermo> operator*(const scalar, const bloodTransport<Thermo> &);
 
-template <class Thermo>
-Ostream &operator<<(Ostream &, const bloodTransport<Thermo> &);
+template <class Thermo> Ostream &operator<<(Ostream &, const bloodTransport<Thermo> &);
 
 /*---------------------------------------------------------------------------*\
                            Class bloodTransport Declaration
 \*---------------------------------------------------------------------------*/
 
-template <class Thermo> class bloodTransport : public Thermo {
-  // Private Data
+template <class Thermo> class bloodTransport : public Thermo
+{
+    // Private Data
 
-  //- Constant dynamic viscosity [Pa.s]
-  scalar mu_;
+    //- Constant dynamic viscosity [Pa.s]
+    scalar mu_;
 
-  //- Reciprocal Prandtl Number [-]
-  scalar rPr_;
+    //- Reciprocal Prandtl Number [-]
+    scalar rPr_;
 
-  // Private Member Functions
+    // Private Member Functions
 
-  //- Construct from components
-  inline bloodTransport(const Thermo &t, const scalar mu, const scalar Pr);
+    //- Construct from components
+    inline bloodTransport(const Thermo &t, const scalar mu, const scalar Pr);
 
-public:
-  // Generated Methods: copy construct, copy assignment
+  public:
+    // Generated Methods: copy construct, copy assignment
 
-  // Constructors
+    // Constructors
 
-  //- Construct as named copy
-  inline bloodTransport(const word &, const bloodTransport &);
+    //- Construct as named copy
+    inline bloodTransport(const word &, const bloodTransport &);
 
-  //- Construct from dictionary
-  explicit bloodTransport(const dictionary &dict);
+    //- Construct from dictionary
+    explicit bloodTransport(const dictionary &dict);
 
-  //- Construct and return a clone
-  inline autoPtr<bloodTransport> clone() const;
+    //- Construct and return a clone
+    inline autoPtr<bloodTransport> clone() const;
 
-  // Selector from dictionary
-  inline static autoPtr<bloodTransport> New(const dictionary &dict);
+    // Selector from dictionary
+    inline static autoPtr<bloodTransport> New(const dictionary &dict);
 
-  // Member Functions
+    // Member Functions
 
-  //- Return the instantiated type name
-  static word typeName() { return "blood<" + Thermo::typeName() + '>'; }
+    //- Return the instantiated type name
+    static word typeName()
+    {
+        return "blood<" + Thermo::typeName() + '>';
+    }
 
-  //- Dynamic viscosity [kg/ms]
-  inline scalar mu(const scalar p, const scalar T, const scalar sr,
-                   const scalar alphaHCT) const;
+    //- Dynamic viscosity [kg/ms]
+    inline scalar mu(const scalar p, const scalar T, const scalar sr, const scalar alphaplasma) const;
 
-  //- Thermal conductivity [W/mK]
-  inline scalar kappa(const scalar p, const scalar T, const scalar sr,
-                      const scalar alphaHCT) const;
+    //- Thermal conductivity [W/mK]
+    inline scalar kappa(const scalar p, const scalar T, const scalar sr, const scalar alphaplasma) const;
 
-  //- Thermal diffusivity of enthalpy [kg/ms]
-  inline scalar alphah(const scalar p, const scalar T, const scalar sr,
-                       const scalar alphaHCT) const;
+    //- Thermal diffusivity of enthalpy [kg/ms]
+    inline scalar alphah(const scalar p, const scalar T, const scalar sr, const scalar alphaplasma) const;
 
-  // Species diffusivity
-  // inline scalar D(const scalar p, const scalar T) const;
+    // Species diffusivity
+    // inline scalar D(const scalar p, const scalar T) const;
 
-  //- Write to Ostream
-  void write(Ostream &os) const;
+    //- Write to Ostream
+    void write(Ostream &os) const;
 
-  // Member Operators
+    // Member Operators
 
-  inline void operator+=(const bloodTransport &);
+    inline void operator+=(const bloodTransport &);
 
-  inline void operator*=(const scalar);
+    inline void operator*=(const scalar);
 
-  // Friend Operators
+    // Friend Operators
 
-  friend bloodTransport operator+
-      <Thermo>(const bloodTransport &, const bloodTransport &);
+    friend bloodTransport operator+<Thermo>(const bloodTransport &, const bloodTransport &);
 
-  friend bloodTransport operator*<Thermo>(const scalar, const bloodTransport &);
+    friend bloodTransport operator*<Thermo>(const scalar, const bloodTransport &);
 
-  // IOstream Operators
+    // IOstream Operators
 
-  friend Ostream &operator<< <Thermo>(Ostream &, const bloodTransport &);
+    friend Ostream &operator<< <Thermo>(Ostream &, const bloodTransport &);
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
