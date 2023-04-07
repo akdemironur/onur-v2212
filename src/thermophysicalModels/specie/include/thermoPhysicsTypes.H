@@ -52,6 +52,10 @@ Description
 #include "sutherlandTransport.H"
 #include "constTransport.H"
 #include "bloodTransport.H"
+#include "bloodRBCTransport.H"
+#include "bloodRBCTempTransport.H"
+#include "bloodPlasmaTransport.H"
+#include "bloodPlasmaTempTransport.H"
 
 #include "icoPolynomial.H"
 #include "hPolynomialThermo.H"
@@ -65,366 +69,126 @@ Description
 
 namespace Foam
 {
-    // thermo physics types based on sensibleEnthalpy
-    typedef
-    bloodTransport
-    <
-        species::thermo
-        <
-            hConstThermo
-            <
-                perfectGas<specie>
-            >,
-            sensibleEnthalpy
-        >
-    > bloodGasHThermoPhysics;
+// thermo physics types based on sensibleEnthalpy
+typedef bloodTransport<species::thermo<hConstThermo<perfectGas<specie>>, sensibleEnthalpy>> bloodGasHThermoPhysics;
 
+typedef bloodTransport<species::thermo<hConstThermo<perfectFluid<specie>>, sensibleEnthalpy>> bloodFluidHThermoPhysics;
 
-    typedef
-    bloodTransport
-    <
-        species::thermo
-        <
-            hConstThermo
-            <
-                perfectFluid<specie>
-            >,
-            sensibleEnthalpy
-        >
-    >
-    bloodFluidHThermoPhysics;
-   
-    typedef
-    constTransport
-    <
-        species::thermo
-        <
-            hConstThermo
-            <
-                perfectGas<specie>
-            >,
-            sensibleEnthalpy
-        >
-    > constGasHThermoPhysics;
+typedef bloodRBCTransport<species::thermo<hConstThermo<perfectGas<specie>>, sensibleEnthalpy>>
+    bloodRBCGasHThermoPhysics;
 
-    typedef
-    sutherlandTransport
-    <
-        species::thermo
-        <
-            janafThermo
-            <
-                perfectGas<specie>
-            >,
-            sensibleEnthalpy
-        >
-    > gasHThermoPhysics;
+typedef bloodRBCTransport<species::thermo<hConstThermo<perfectFluid<specie>>, sensibleEnthalpy>>
+    bloodRBCFluidHThermoPhysics;
 
-    typedef
-    constTransport
-    <
-        species::thermo
-        <
-            hConstThermo
-            <
-                incompressiblePerfectGas<specie>
-            >,
-            sensibleEnthalpy
-        >
-    > constIncompressibleGasHThermoPhysics;
+typedef bloodRBCTempTransport<species::thermo<hConstThermo<perfectGas<specie>>, sensibleEnthalpy>>
+    bloodRBCTempGasHThermoPhysics;
 
-    typedef
-    sutherlandTransport
-    <
-        species::thermo
-        <
-            janafThermo
-            <
-                incompressiblePerfectGas<specie>
-            >,
-            sensibleEnthalpy
-        >
-    > incompressibleGasHThermoPhysics;
+typedef bloodRBCTempTransport<species::thermo<hConstThermo<perfectFluid<specie>>, sensibleEnthalpy>>
+    bloodRBCTempFluidHThermoPhysics;
 
-    typedef
-    polynomialTransport
-    <
-        species::thermo
-        <
-            hPolynomialThermo
-            <
-                icoPolynomial<specie, 8>,
-                8
-            >,
-            sensibleEnthalpy
-        >,
-        8
-    > icoPoly8HThermoPhysics;
+typedef bloodPlasmaTransport<species::thermo<hConstThermo<perfectGas<specie>>, sensibleEnthalpy>>
+    bloodPlasmaGasHThermoPhysics;
 
-    typedef
-    polynomialTransport
-    <
-        species::thermo
-        <
-            janafThermo
-            <
-                perfectGas<specie>
-            >,
-            sensibleEnthalpy
-        >,
-        8
-    > icoPoly8TranspJanafHThermoPhysics;
+typedef bloodPlasmaTransport<species::thermo<hConstThermo<perfectFluid<specie>>, sensibleEnthalpy>>
+    bloodPlasmaFluidHThermoPhysics;
 
-    typedef
-    constTransport
-    <
-        species::thermo
-        <
-            hConstThermo
-            <
-                perfectFluid<specie>
-            >,
-            sensibleEnthalpy
-        >
-    >
-    constFluidHThermoPhysics;
+typedef bloodPlasmaTempTransport<species::thermo<hConstThermo<perfectGas<specie>>, sensibleEnthalpy>>
+    bloodPlasmaTempGasHThermoPhysics;
 
-    typedef
-    constTransport
-    <
-        species::thermo
-        <
-            hConstThermo
-            <
-                rPolynomial<specie>
-            >,
-            sensibleEnthalpy
-        >
-    >
+typedef bloodPlasmaTempTransport<species::thermo<hConstThermo<perfectFluid<specie>>, sensibleEnthalpy>>
+    bloodPlasmaTempFluidHThermoPhysics;
+
+typedef constTransport<species::thermo<hConstThermo<perfectGas<specie>>, sensibleEnthalpy>> constGasHThermoPhysics;
+
+typedef sutherlandTransport<species::thermo<janafThermo<perfectGas<specie>>, sensibleEnthalpy>> gasHThermoPhysics;
+
+typedef constTransport<species::thermo<hConstThermo<incompressiblePerfectGas<specie>>, sensibleEnthalpy>>
+    constIncompressibleGasHThermoPhysics;
+
+typedef sutherlandTransport<species::thermo<janafThermo<incompressiblePerfectGas<specie>>, sensibleEnthalpy>>
+    incompressibleGasHThermoPhysics;
+
+typedef polynomialTransport<species::thermo<hPolynomialThermo<icoPolynomial<specie, 8>, 8>, sensibleEnthalpy>, 8>
+    icoPoly8HThermoPhysics;
+
+typedef polynomialTransport<species::thermo<janafThermo<perfectGas<specie>>, sensibleEnthalpy>, 8>
+    icoPoly8TranspJanafHThermoPhysics;
+
+typedef constTransport<species::thermo<hConstThermo<perfectFluid<specie>>, sensibleEnthalpy>> constFluidHThermoPhysics;
+
+typedef constTransport<species::thermo<hConstThermo<rPolynomial<specie>>, sensibleEnthalpy>>
     constrPolFluidHThermoPhysics;
 
-    typedef
-    constTransport
-    <
-        species::thermo
-        <
-            hConstThermo
-            <
-                adiabaticPerfectFluid<specie>
-            >,
-            sensibleEnthalpy
-        >
-    >
+typedef constTransport<species::thermo<hConstThermo<adiabaticPerfectFluid<specie>>, sensibleEnthalpy>>
     constAdiabaticFluidHThermoPhysics;
 
-    typedef
-    constTransport
-    <
-        species::thermo
-        <
-            hConstThermo
-            <
-                rhoConst<specie>
-            >,
-            sensibleEnthalpy
-        >
-    >
-    constHThermoPhysics;
+typedef constTransport<species::thermo<hConstThermo<rhoConst<specie>>, sensibleEnthalpy>> constHThermoPhysics;
 
-    typedef
-    tabulatedTransport
-    <
-        species::thermo
-        <
-            hTabulatedThermo
-            <
-                icoTabulated<specie>
-            >,
-            sensibleEnthalpy
-        >
-    >
+typedef tabulatedTransport<species::thermo<hTabulatedThermo<icoTabulated<specie>>, sensibleEnthalpy>>
     tabulatedThermoPhysics;
 
+// thermo physics types based on sensibleInternalEnergy
+typedef bloodTransport<species::thermo<eConstThermo<perfectGas<specie>>, sensibleInternalEnergy>>
+    bloodGasEThermoPhysics;
 
-    // thermo physics types based on sensibleInternalEnergy
-    typedef
-    bloodTransport
-    <
-        species::thermo
-        <
-            eConstThermo
-            <
-                perfectGas<specie>
-            >,
-            sensibleInternalEnergy
-        >
-    > bloodGasEThermoPhysics;
-
-    typedef
-    bloodTransport
-    <
-        species::thermo
-        <
-            eConstThermo
-            <
-                perfectFluid<specie>
-            >,
-            sensibleInternalEnergy
-        >
-    >
+typedef bloodTransport<species::thermo<eConstThermo<perfectFluid<specie>>, sensibleInternalEnergy>>
     bloodFluidEThermoPhysics;
 
-    typedef
-    constTransport
-    <
-        species::thermo
-        <
-            eConstThermo
-            <
-                perfectGas<specie>
-            >,
-            sensibleInternalEnergy
-        >
-    > constGasEThermoPhysics;
+typedef bloodRBCTransport<species::thermo<eConstThermo<perfectGas<specie>>, sensibleInternalEnergy>>
+    bloodRBCGasEThermoPhysics;
 
-    typedef
-    sutherlandTransport
-    <
-        species::thermo
-        <
-            janafThermo
-            <
-                perfectGas<specie>
-            >,
-            sensibleInternalEnergy
-        >
-    > gasEThermoPhysics;
+typedef bloodRBCTransport<species::thermo<eConstThermo<perfectFluid<specie>>, sensibleInternalEnergy>>
+    bloodRBCFluidEThermoPhysics;
 
-    typedef
-    constTransport
-    <
-        species::thermo
-        <
-            eConstThermo
-            <
-                incompressiblePerfectGas<specie>
-            >,
-            sensibleInternalEnergy
-        >
-    > constIncompressibleGasEThermoPhysics;
+typedef bloodRBCTempTransport<species::thermo<eConstThermo<perfectGas<specie>>, sensibleInternalEnergy>>
+    bloodRBCTempGasEThermoPhysics;
 
-    typedef
-    sutherlandTransport
-    <
-        species::thermo
-        <
-            janafThermo
-            <
-                incompressiblePerfectGas<specie>
-            >,
-            sensibleInternalEnergy
-        >
-    > incompressibleGasEThermoPhysics;
+typedef bloodRBCTempTransport<species::thermo<eConstThermo<perfectFluid<specie>>, sensibleInternalEnergy>>
+    bloodRBCTempFluidEThermoPhysics;
 
-    typedef
-    polynomialTransport
-    <
-        species::thermo
-        <
-            hPolynomialThermo
-            <
-                icoPolynomial<specie, 8>,
-                8
-            >,
-            sensibleInternalEnergy
-        >,
-        8
-    > icoPoly8EThermoPhysics;
+typedef bloodPlasmaTransport<species::thermo<eConstThermo<perfectGas<specie>>, sensibleInternalEnergy>>
+    bloodPlasmaGasEThermoPhysics;
 
-    typedef
-    polynomialTransport
-    <
-        species::thermo
-        <
-            janafThermo
-            <
-                perfectGas<specie>
-            >,
-            sensibleInternalEnergy
-        >,
-        8
-    > icoPoly8TranspJanafEThermoPhysics;
+typedef bloodPlasmaTransport<species::thermo<eConstThermo<perfectFluid<specie>>, sensibleInternalEnergy>>
+    bloodPlasmaFluidEThermoPhysics;
 
-    typedef
-    constTransport
-    <
-        species::thermo
-        <
-            eConstThermo
-            <
-                perfectFluid<specie>
-            >,
-            sensibleInternalEnergy
-        >
-    >
+typedef bloodPlasmaTempTransport<species::thermo<eConstThermo<perfectGas<specie>>, sensibleInternalEnergy>>
+    bloodPlasmaTempGasEThermoPhysics;
+
+typedef bloodPlasmaTempTransport<species::thermo<eConstThermo<perfectFluid<specie>>, sensibleInternalEnergy>>
+    bloodPlasmaTempFluidEThermoPhysics;
+
+typedef constTransport<species::thermo<eConstThermo<perfectGas<specie>>, sensibleInternalEnergy>>
+    constGasEThermoPhysics;
+
+typedef sutherlandTransport<species::thermo<janafThermo<perfectGas<specie>>, sensibleInternalEnergy>> gasEThermoPhysics;
+
+typedef constTransport<species::thermo<eConstThermo<incompressiblePerfectGas<specie>>, sensibleInternalEnergy>>
+    constIncompressibleGasEThermoPhysics;
+
+typedef sutherlandTransport<species::thermo<janafThermo<incompressiblePerfectGas<specie>>, sensibleInternalEnergy>>
+    incompressibleGasEThermoPhysics;
+
+typedef polynomialTransport<species::thermo<hPolynomialThermo<icoPolynomial<specie, 8>, 8>, sensibleInternalEnergy>, 8>
+    icoPoly8EThermoPhysics;
+
+typedef polynomialTransport<species::thermo<janafThermo<perfectGas<specie>>, sensibleInternalEnergy>, 8>
+    icoPoly8TranspJanafEThermoPhysics;
+
+typedef constTransport<species::thermo<eConstThermo<perfectFluid<specie>>, sensibleInternalEnergy>>
     constFluidEThermoPhysics;
 
-    typedef
-    constTransport
-    <
-        species::thermo
-        <
-            eConstThermo
-            <
-                perfectFluid<specie>
-            >,
-            sensibleInternalEnergy
-        >
-    >
+typedef constTransport<species::thermo<eConstThermo<perfectFluid<specie>>, sensibleInternalEnergy>>
     constrPolFluidEThermoPhysics;
 
-    typedef
-    constTransport
-    <
-        species::thermo
-        <
-            eConstThermo
-            <
-                adiabaticPerfectFluid<specie>
-            >,
-            sensibleInternalEnergy
-        >
-    >
+typedef constTransport<species::thermo<eConstThermo<adiabaticPerfectFluid<specie>>, sensibleInternalEnergy>>
     constAdiabaticFluidEThermoPhysics;
 
-    typedef
-    constTransport
-    <
-        species::thermo
-        <
-            eConstThermo
-            <
-                rhoConst<specie>
-            >,
-            sensibleInternalEnergy
-        >
-    >
-    constEThermoPhysics;
+typedef constTransport<species::thermo<eConstThermo<rhoConst<specie>>, sensibleInternalEnergy>> constEThermoPhysics;
 
-    typedef
-    tabulatedTransport
-    <
-        species::thermo
-        <
-            hTabulatedThermo
-            <
-                icoTabulated<specie>
-            >,
-            sensibleInternalEnergy
-        >
-    >
+typedef tabulatedTransport<species::thermo<hTabulatedThermo<icoTabulated<specie>>, sensibleInternalEnergy>>
     tabulatedEThermoPhysics;
-}
+} // namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

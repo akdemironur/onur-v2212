@@ -52,6 +52,10 @@ License
 /* #include "sutherlandTransport.H" */
 /* #include "WLFTransport.H" */
 #include "bloodTransport.H"
+#include "bloodRBCTransport.H"
+#include "bloodRBCTempTransport.H"
+#include "bloodPlasmaTransport.H"
+#include "bloodPlasmaTempTransport.H"
 /* #include "icoPolynomial.H" */
 /* #include "hPolynomialThermo.H" */
 /* #include "polynomialTransport.H" */
@@ -62,18 +66,55 @@ License
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-namespace Foam {
+namespace Foam
+{
 
 /* * * * * * * * * * * * * * * Private Static Data * * * * * * * * * * * * * */
 
-makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodTransport,
-            sensibleEnthalpy, hConstThermo, perfectGas, specie);
-makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodTransport,
-            sensibleEnthalpy, hConstThermo, perfectFluid, specie);
-makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodTransport,
-            sensibleInternalEnergy, eConstThermo, perfectGas, specie);
-makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodTransport,
-            sensibleInternalEnergy, eConstThermo, perfectFluid, specie);
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodTransport, sensibleEnthalpy, hConstThermo, perfectGas,
+            specie);
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodTransport, sensibleEnthalpy, hConstThermo, perfectFluid,
+            specie);
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodTransport, sensibleInternalEnergy, eConstThermo,
+            perfectGas, specie);
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodTransport, sensibleInternalEnergy, eConstThermo,
+            perfectFluid, specie);
+
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodRBCTransport, sensibleEnthalpy, hConstThermo,
+            perfectGas, specie);
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodRBCTransport, sensibleEnthalpy, hConstThermo,
+            perfectFluid, specie);
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodRBCTransport, sensibleInternalEnergy, eConstThermo,
+            perfectGas, specie);
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodRBCTransport, sensibleInternalEnergy, eConstThermo,
+            perfectFluid, specie);
+
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodRBCTempTransport, sensibleEnthalpy, hConstThermo,
+            perfectGas, specie);
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodRBCTempTransport, sensibleEnthalpy, hConstThermo,
+            perfectFluid, specie);
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodRBCTempTransport, sensibleInternalEnergy, eConstThermo,
+            perfectGas, specie);
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodRBCTempTransport, sensibleInternalEnergy, eConstThermo,
+            perfectFluid, specie);
+
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodPlasmaTransport, sensibleEnthalpy, hConstThermo,
+            perfectGas, specie);
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodPlasmaTransport, sensibleEnthalpy, hConstThermo,
+            perfectFluid, specie);
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodPlasmaTransport, sensibleInternalEnergy, eConstThermo,
+            perfectGas, specie);
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodPlasmaTransport, sensibleInternalEnergy, eConstThermo,
+            perfectFluid, specie);
+
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodPlasmaTempTransport, sensibleEnthalpy, hConstThermo,
+            perfectGas, specie);
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodPlasmaTempTransport, sensibleEnthalpy, hConstThermo,
+            perfectFluid, specie);
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodPlasmaTempTransport, sensibleInternalEnergy,
+            eConstThermo, perfectGas, specie);
+makeThermos(bloodrhoThermo, bloodheRhoThermo, pureMixture, bloodPlasmaTempTransport, sensibleInternalEnergy,
+            eConstThermo, perfectFluid, specie);
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

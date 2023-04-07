@@ -52,7 +52,7 @@ void Foam::bloodheRhoThermo<BasicPsiThermo, MixtureType>::calculate(const volSca
     scalarField &rhoCells = rho.primitiveFieldRef();
     scalarField &muCells = mu.primitiveFieldRef();
     scalarField &alphaCells = alpha.primitiveFieldRef();
-    const volScalarField &alphaplasma_ = this->db().objectRegistry ::lookupObject<volScalarField>("alpha.plasma");
+    const volScalarField &alphaplasma_ = this->db().objectRegistry ::lookupObject<volScalarField>("alpha.air");
 
     const volVectorField &U = this->db().objectRegistry::lookupObject<volVectorField>("U");
     /* const volVectorField *U1 = this->db().objectRegistry::findObject<volVectorField>("U.water"); */
