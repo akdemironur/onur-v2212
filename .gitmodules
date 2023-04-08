@@ -1,0 +1,3 @@
+[submodule "haemoFoam"]
+	path = haemoFoam
+	url = https://github.com/TS-CUBED/haemoFoam/
