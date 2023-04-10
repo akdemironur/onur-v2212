@@ -56,8 +56,13 @@ template <class Thermo>
 inline Foam::scalar Foam::bloodPlasmaTempTransport<Thermo>::mu(const scalar p, const scalar T, const scalar sr,
                                                      const scalar alphaplasma) const
 {
-
-    return mu_;
+    scalar muplasma = scalar(0.00096);
+    // Temperature Correction
+    scalar alphaT = scalar(1.92), betaT = scalar(0.20), phiT = scalar(17.42), xiT = scalar(14.1);
+    scalar correction37 = alphaT + phiT / (scalar(1) + Foam::exp(betaT * (37 - xiT)));
+    scalar correctionT = alphaT + phiT / (scalar(1) + Foam::exp(betaT * (T - xiT)));
+    muplasma = muplasma * (correctionT / correction37);
+    return muplasma;
 }
 
 template <class Thermo>

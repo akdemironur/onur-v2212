@@ -39,7 +39,8 @@ inline Foam::bloodRBCTransport<Thermo>::bloodRBCTransport(const word &name, cons
 {
 }
 
-template <class Thermo> inline Foam::autoPtr<Foam::bloodRBCTransport<Thermo>> Foam::bloodRBCTransport<Thermo>::clone() const
+template <class Thermo>
+inline Foam::autoPtr<Foam::bloodRBCTransport<Thermo>> Foam::bloodRBCTransport<Thermo>::clone() const
 {
     return autoPtr<bloodRBCTransport<Thermo>>::New(*this);
 }
@@ -54,22 +55,45 @@ inline Foam::autoPtr<Foam::bloodRBCTransport<Thermo>> Foam::bloodRBCTransport<Th
 
 template <class Thermo>
 inline Foam::scalar Foam::bloodRBCTransport<Thermo>::mu(const scalar p, const scalar T, const scalar sr,
-                                                     const scalar alphaplasma) const
+                                                        const scalar alphaplasma) const
 {
-
-    return mu_;
+    scalar alphaRBC = scalar(1) - alphaplasma;
+    scalar lambda = scalar(0.110);
+    scalar sr_bar = scalar(1) + Foam::pow(lambda * sr, 2);
+    scalar muplasma = scalar(0.00096);
+    scalar m, n, eta, muRBC;
+    if (sr_bar >= scalar(1.5))
+    {
+        m = scalar(122.28) * Foam::pow(alphaRBC, 3) + scalar(-51.213) * Foam::pow(alphaRBC, 2) +
+            scalar(16.305) * alphaRBC + scalar(1);
+        n = scalar(0.8092) * Foam::pow(alphaRBC, 3) + scalar(-0.8246) * Foam::pow(alphaRBC, 2) +
+            scalar(-0.3503) * alphaRBC + scalar(1);
+    }
+    else
+    {
+        scalar k0 = Foam::log(Foam::log(sr_bar)) / Foam::log(sr_bar);
+        m = scalar(70.782) * Foam::pow(alphaRBC, 3) + scalar(-22.454) * Foam::pow(alphaRBC, 2) +
+            scalar(9.7193) * alphaRBC + scalar(1);
+        n = (scalar(-0.8913) * Foam::pow(alphaRBC, 3) + scalar(2.0679) * Foam::pow(alphaRBC, 2) +
+             scalar(-1.7814) * alphaRBC) *
+                k0 +
+            scalar(1);
+    }
+    eta = m * Foam::pow(1 + sr_bar, (n - scalar(1)) / scalar(2));
+    muRBC = (eta * muplasma - alphaplasma * muplasma) / alphaRBC;
+    return muRBC;
 }
 
 template <class Thermo>
 inline Foam::scalar Foam::bloodRBCTransport<Thermo>::kappa(const scalar p, const scalar T, const scalar sr,
-                                                        const scalar alphaplasma) const
+                                                           const scalar alphaplasma) const
 {
     return this->Cp(p, T) * mu(p, T, sr, alphaplasma) * rPr_;
 }
 
 template <class Thermo>
 inline Foam::scalar Foam::bloodRBCTransport<Thermo>::alphah(const scalar p, const scalar T, const scalar sr,
-                                                         const scalar alphaplasma) const
+                                                            const scalar alphaplasma) const
 {
     return mu(p, T, sr, alphaplasma) * rPr_;
 }
@@ -101,7 +125,7 @@ template <class Thermo> inline void Foam::bloodRBCTransport<Thermo>::operator*=(
 
 template <class Thermo>
 inline Foam::bloodRBCTransport<Thermo> Foam::operator+(const bloodRBCTransport<Thermo> &ct1,
-                                                    const bloodRBCTransport<Thermo> &ct2)
+                                                       const bloodRBCTransport<Thermo> &ct2)
 {
     Thermo t(static_cast<const Thermo &>(ct1) + static_cast<const Thermo &>(ct2));
 
