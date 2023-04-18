@@ -28,24 +28,28 @@ License
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template <class Thermo>
-inline Foam::bloodPlasmaTempTransport<Thermo>::bloodPlasmaTempTransport(const Thermo &t, const scalar mu, const scalar Pr)
+inline Foam::bloodPlasmaTempTransport<Thermo>::bloodPlasmaTempTransport(const Thermo &t, const scalar mu,
+                                                                        const scalar Pr)
     : Thermo(t), mu_(mu), rPr_(1.0 / Pr)
 {
 }
 
 template <class Thermo>
-inline Foam::bloodPlasmaTempTransport<Thermo>::bloodPlasmaTempTransport(const word &name, const bloodPlasmaTempTransport &ct)
+inline Foam::bloodPlasmaTempTransport<Thermo>::bloodPlasmaTempTransport(const word &name,
+                                                                        const bloodPlasmaTempTransport &ct)
     : Thermo(name, ct), mu_(ct.mu_), rPr_(ct.rPr_)
 {
 }
 
-template <class Thermo> inline Foam::autoPtr<Foam::bloodPlasmaTempTransport<Thermo>> Foam::bloodPlasmaTempTransport<Thermo>::clone() const
+template <class Thermo>
+inline Foam::autoPtr<Foam::bloodPlasmaTempTransport<Thermo>> Foam::bloodPlasmaTempTransport<Thermo>::clone() const
 {
     return autoPtr<bloodPlasmaTempTransport<Thermo>>::New(*this);
 }
 
 template <class Thermo>
-inline Foam::autoPtr<Foam::bloodPlasmaTempTransport<Thermo>> Foam::bloodPlasmaTempTransport<Thermo>::New(const dictionary &dict)
+inline Foam::autoPtr<Foam::bloodPlasmaTempTransport<Thermo>> Foam::bloodPlasmaTempTransport<Thermo>::New(
+    const dictionary &dict)
 {
     return autoPtr<bloodPlasmaTempTransport<Thermo>>::New(dict);
 }
@@ -54,34 +58,33 @@ inline Foam::autoPtr<Foam::bloodPlasmaTempTransport<Thermo>> Foam::bloodPlasmaTe
 
 template <class Thermo>
 inline Foam::scalar Foam::bloodPlasmaTempTransport<Thermo>::mu(const scalar p, const scalar T, const scalar sr,
-                                                     const scalar alphaplasma) const
+                                                               const scalar alphaplasma) const
 {
-    scalar muplasma = scalar(0.00096);
-    // Temperature Correction
-    scalar alphaT = scalar(1.92), betaT = scalar(0.20), phiT = scalar(17.42), xiT = scalar(14.1);
-    scalar correction37 = alphaT + phiT / (scalar(1) + Foam::exp(betaT * (37 - xiT)));
-    scalar correctionT = alphaT + phiT / (scalar(1) + Foam::exp(betaT * (T - xiT)));
-    muplasma = muplasma * (correctionT / correction37);
+    scalar muplasma;
+    muplasma = scalar(-3.13272070e-08) * T * T * T + scalar(2.89621002e-05) * T * T + scalar(-8.95638907e-03) * T +
+               scalar(9.27671328e-01);
+
     return muplasma;
 }
 
 template <class Thermo>
 inline Foam::scalar Foam::bloodPlasmaTempTransport<Thermo>::kappa(const scalar p, const scalar T, const scalar sr,
-                                                        const scalar alphaplasma) const
+                                                                  const scalar alphaplasma) const
 {
     return this->Cp(p, T) * mu(p, T, sr, alphaplasma) * rPr_;
 }
 
 template <class Thermo>
 inline Foam::scalar Foam::bloodPlasmaTempTransport<Thermo>::alphah(const scalar p, const scalar T, const scalar sr,
-                                                         const scalar alphaplasma) const
+                                                                   const scalar alphaplasma) const
 {
     return mu(p, T, sr, alphaplasma) * rPr_;
 }
 
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
 
-template <class Thermo> inline void Foam::bloodPlasmaTempTransport<Thermo>::operator+=(const bloodPlasmaTempTransport<Thermo> &st)
+template <class Thermo>
+inline void Foam::bloodPlasmaTempTransport<Thermo>::operator+=(const bloodPlasmaTempTransport<Thermo> &st)
 {
     scalar Y1 = this->Y();
 
@@ -106,7 +109,7 @@ template <class Thermo> inline void Foam::bloodPlasmaTempTransport<Thermo>::oper
 
 template <class Thermo>
 inline Foam::bloodPlasmaTempTransport<Thermo> Foam::operator+(const bloodPlasmaTempTransport<Thermo> &ct1,
-                                                    const bloodPlasmaTempTransport<Thermo> &ct2)
+                                                              const bloodPlasmaTempTransport<Thermo> &ct2)
 {
     Thermo t(static_cast<const Thermo &>(ct1) + static_cast<const Thermo &>(ct2));
 
@@ -124,7 +127,8 @@ inline Foam::bloodPlasmaTempTransport<Thermo> Foam::operator+(const bloodPlasmaT
 }
 
 template <class Thermo>
-inline Foam::bloodPlasmaTempTransport<Thermo> Foam::operator*(const scalar s, const bloodPlasmaTempTransport<Thermo> &ct)
+inline Foam::bloodPlasmaTempTransport<Thermo> Foam::operator*(const scalar s,
+                                                              const bloodPlasmaTempTransport<Thermo> &ct)
 {
     return bloodPlasmaTempTransport<Thermo>(s * static_cast<const Thermo &>(ct), ct.mu_, 1.0 / ct.rPr_);
 }
